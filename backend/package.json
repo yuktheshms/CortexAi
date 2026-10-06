@@ -1,15 +1,86 @@
 {
-  "name": "backend",
-  "version": "1.0.0",
-  "description": "",
-  "license": "ISC",
-  "author": "",
-  "type": "module",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "gateway": {
+      "root": "gateway",
+      "framework": "express",
+      "bindings": [
+        {
+          "type": "service",
+          "service": "auth",
+          "format": "url",
+          "env": "AUTH_SERVICE_URL"
+        },
+        {
+          "type": "service",
+          "service": "chat",
+          "format": "url",
+          "env": "CHAT_SERVICE_URL"
+        },
+        {
+          "type": "service",
+          "service": "agent",
+          "format": "url",
+          "env": "AGENT_SERVICE_URL"
+        },
+        {
+          "type": "service",
+          "service": "billing",
+          "format": "url",
+          "env": "BILLING_SERVICE_URL"
+        }
+      ]
+    },
+
+    "agent": {
+      "root": "services/agent",
+      "framework": "express",
+      "bindings": [
+        {
+          "type": "service",
+          "service": "chat",
+          "format": "url",
+          "env": "CHAT_SERVICE_URL"
+        },
+        {
+          "type": "service",
+          "service": "auth",
+          "format": "url",
+          "env": "AUTH_SERVICE_URL"
+        }
+      ]
+    },
+
+    "auth": {
+      "root": "services/auth",
+      "framework": "express"
+    },
+
+    "billing": {
+      "root": "services/billing",
+      "framework": "express",
+      "bindings": [
+        {
+          "type": "service",
+          "service": "auth",
+          "format": "url",
+          "env": "AUTH_SERVICE_URL"
+        }
+      ]
+    },
+
+    "chat": {
+      "root": "services/chat",
+      "framework": "express"
+    }
   },
-  "dependencies": {
-    "ioredis": "^5.11.1"
-  }
+
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": {
+        "service": "gateway"
+      }
+    }
+  ]
 }
